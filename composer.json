@@ -1,0 +1,36 @@
+{
+  "name": "shubhamc4/cgrate-php",
+  "version": "1.0.0",
+  "description": "Core PHP package for integrating with Cgrate payment service (543 Konse Konse)",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Shubham Chaudhary"
+    }
+  ],
+  "keywords": [
+    "cgrate payment service",
+    "konse konse",
+    "543 payment service",
+    "php",
+    "soap",
+    "library"
+  ],
+  "homepage": "https://github.com/shubhamc4/cgrate-php",
+  "support": {
+    "issues": "https://github.com/shubhamc4/cgrate-php/issues",
+    "source": "https://github.com/shubhamc4/cgrate-php"
+  },
+  "autoload": {
+    "psr-4": {
+      "Cgrate\\Php\\": "src/"
+    }
+  },
+  "require": {
+    "php": "^7.4",
+    "ext-soap": "*"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
