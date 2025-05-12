@@ -1,7 +1,7 @@
 {
   "name": "shubhamc4/cgrate-php",
   "version": "2.0.0",
-  "description": "Core PHP package for integrating with Cgrate payment service (543 Konse Konse)",
+  "description": "Core PHP package for integrating with CGrate payment service (543 Konse Konse)",
   "type": "library",
   "license": "MIT",
   "authors": [

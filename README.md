@@ -69,7 +69,7 @@ $config = [
     ],
 ];
 
-$cgrate = new \CGrate\Php\Services\CGrateService($config);
+$client = new \CGrate\Php\Services\CGrateService($config);
 ```
 
 Alternatively, you can use the config helper:
@@ -80,11 +80,11 @@ use CGrate\Php\Services\CGrateService;
 
 // Create config with username, password and test mode (optional)
 $config = CGrateConfig::create(
-    username: 'your-username', 
-    password: 'your-password', 
+    username: 'your-username',
+    password: 'your-password',
     testMode: true
 );
-$cgrate = new CGrateService($config);
+$client = new CGrateService($config);
 ```
 
 ## Available Methods
@@ -102,12 +102,12 @@ $cgrate = new CGrateService($config);
 
 ```php
 try {
-    $balance = $cgrate->getAccountBalance();
+    $response = $client->getAccountBalance();
 
-    if ($balance->isSuccessful()) {
-        echo "Balance: " . $balance->getBalance();
+    if ($response->isSuccessful()) {
+        echo "Balance: " . $response->displayBalance();
     } else {
-        echo "Error: " . $balance->getResponseMessage();
+        echo "Error: " . $response->responseMessage;
     }
 } catch (\CGrate\Php\Exceptions\CGrateException $e) {
     echo "Exception: " . $e->getMessage();
@@ -119,17 +119,17 @@ try {
 ```php
 try {
     $payment = new \CGrate\Php\DTOs\PaymentRequestDTO(
-        100.50,  // Amount
+        10.50,  // Amount
         '260970000000',  // Customer mobile number
         'PAYMENT-' . time()  // Unique payment reference
     );
 
-    $response = $cgrate->processCustomerPayment($payment);
+    $response = $client->processCustomerPayment($payment);
 
     if ($response->isSuccessful()) {
-        echo "Payment ID: " . $response->getPaymentID();
+        echo "Payment ID: " . $response->paymentID;
     } else {
-        echo "Payment failed: " . $response->getResponseMessage();
+        echo "Payment failed: " . $response->responseMessage;
     }
 } catch (\CGrate\Php\Exceptions\CGrateException $e) {
     echo "Exception: " . $e->getMessage();
@@ -140,12 +140,12 @@ try {
 
 ```php
 try {
-    $status = $cgrate->queryTransactionStatus('YOUR-TRANSACTION-REFERENCE');
+    $response = $client->queryTransactionStatus('YOUR-TRANSACTION-REFERENCE');
 
-    if ($status->isSuccessful()) {
-        echo "Transaction status: " . $status->getResponseMessage();
+    if ($response->isSuccessful()) {
+        echo "Transaction status: " . $response->responseMessage;
     } else {
-        echo "Query failed: " . $status->getResponseMessage();
+        echo "Query failed: " . $response->responseMessage;
     }
 } catch (\CGrate\Php\Exceptions\CGrateException $e) {
     echo "Exception: " . $e->getMessage();
@@ -156,12 +156,12 @@ try {
 
 ```php
 try {
-    $reversal = $cgrate->reverseCustomerPayment('YOUR-PAYMENT-REFERENCE');
+    $response = $client->reverseCustomerPayment('YOUR-PAYMENT-REFERENCE');
 
-    if ($reversal->isSuccessful()) {
+    if ($response->isSuccessful()) {
         echo "Payment reversed successfully";
     } else {
-        echo "Reversal failed: " . $reversal->getResponseMessage();
+        echo "Reversal failed: " . $response->responseMessage;
     }
 } catch (\CGrate\Php\Exceptions\CGrateException $e) {
     echo "Exception: " . $e->getMessage();
