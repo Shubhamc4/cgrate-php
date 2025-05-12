@@ -2,58 +2,51 @@
 
 declare(strict_types=1);
 
-namespace Cgrate\Php\DTOs;
+namespace CGrate\Php\DTOs;
 
 /**
- * Data Transfer Object for payment request to Cgrate API.
+ * Data Transfer Object for payment request to CGrate API.
  */
-class PaymentRequestDTO
+final readonly class PaymentRequestDTO
 {
-    private float $transactionAmount;
-    private string $customerMobile;
-    private string $paymentReference;
-
     /**
      * Create a new payment request DTO.
      *
-     * @param float  $transactionAmount The amount of the transaction (must be positive)
-     * @param string $customerMobile    The mobile number of the customer (should be in format 2609XXXXXXXX)
-     * @param string $paymentReference  The unique reference for the payment (should be unique per transaction)
+     * @param  float  $transactionAmount  The amount of the transaction (must be positive)
+     * @param  string  $customerMobile  The mobile number of the customer (should be in format 2609XXXXXXXX)
+     * @param  string  $paymentReference  The unique reference for the payment (should be unique per transaction)
      */
     public function __construct(
-        float $transactionAmount,
-        string $customerMobile,
-        string $paymentReference
+        public readonly float $transactionAmount,
+        public readonly string $customerMobile,
+        public readonly string $paymentReference,
     ) {
-        $this->transactionAmount = $transactionAmount;
-        $this->customerMobile = $customerMobile;
-        $this->paymentReference = $paymentReference;
     }
 
     /**
      * Create a new payment request DTO.
      *
-     * @param  float  $transactionAmount The amount of the transaction (must be positive)
-     * @param  string $customerMobile    The mobile number of the customer (should be in format 2609XXXXXXXX)
-     * @param  string $paymentReference  The unique reference for the payment (should be unique per transaction)
-     * @return self New payment request DTO instance
+     * @param  float  $transactionAmount  The amount of the transaction (must be positive)
+     * @param  string  $customerMobile  The mobile number of the customer (should be in format 2609XXXXXXXX)
+     * @param  string  $paymentReference  The unique reference for the payment (should be unique per transaction)
+     * @return  self  New payment request DTO instance
      */
     public static function create(
         float $transactionAmount,
         string $customerMobile,
-        string $paymentReference
+        string $paymentReference,
     ): self {
         return new self(
-            $transactionAmount,
-            $customerMobile,
-            $paymentReference
+            transactionAmount: $transactionAmount,
+            customerMobile: $customerMobile,
+            paymentReference: $paymentReference,
         );
     }
 
     /**
      * Convert the DTO to an array.
      *
-     * @return array{transactionAmount: float, customerMobile: string, paymentReference: string}
+     * @return  array{transactionAmount:float,customerMobile:string,paymentReference:string}
      */
     public function toArray(): array
     {
@@ -62,20 +55,5 @@ class PaymentRequestDTO
             'customerMobile' => $this->customerMobile,
             'paymentReference' => $this->paymentReference,
         ];
-    }
-
-    public function getTransactionAmount(): float
-    {
-        return $this->transactionAmount;
-    }
-
-    public function getCustomerMobile(): string
-    {
-        return $this->customerMobile;
-    }
-
-    public function getPaymentReference(): string
-    {
-        return $this->paymentReference;
     }
 }

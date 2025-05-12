@@ -2,6 +2,10 @@
 
 All notable changes to `cgrate-php` will be documented in this file.
 
+## 2.0.0 - 2025-05-12
+
+- Upgrade package to support php 8.2 and above
+
 ## 1.0.0 - 2025-05-09
 
 ### Added

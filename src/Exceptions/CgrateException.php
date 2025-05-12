@@ -2,22 +2,29 @@
 
 declare(strict_types=1);
 
-namespace Cgrate\Php\Exceptions;
+namespace CGrate\Php\Exceptions;
 
+use CGrate\Php\Enums\ResponseCode;
 use Exception;
 use Throwable;
 
-class CgrateException extends Exception
+/**
+ * Base exception for all CGrate package exceptions.
+ */
+abstract class CGrateException extends Exception
 {
+    /**
+     * The response code from the API, if available.
+     */
     protected ?int $responseCode = null;
 
     /**
      * Create a new CGrate exception.
      *
-     * @param string         $message      The exception message
-     * @param int|null       $responseCode The response code from the API
-     * @param int            $code         The exception code
-     * @param Throwable|null $previous     The previous exception
+     * @param  string  $message  The exception message
+     * @param  int|null  $responseCode  The response code from the API
+     * @param  int  $code  The exception code
+     * @param  Throwable|null  $previous  The previous exception
      */
     public function __construct(
         string $message,
@@ -25,30 +32,13 @@ class CgrateException extends Exception
         int $code = 0,
         ?Throwable $previous = null
     ) {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, $code ?: $previous->getCode(), $previous);
 
-        $this->responseCode = $responseCode;
-    }
-
-    /**
-     * Create a new connection exception.
-     *
-     * @param  string         $message  The exception message
-     * @param  Throwable|null $previous The previous exception
-     * @return self
-     */
-    public static function fromMessage(string $message, ?Throwable $previous = null): self
-    {
-        return new self(
-            $message . ': ' . $previous->getMessage(),
-            null,
-            0,
-            $previous
-        );
+        $this->responseCode = $responseCode !== null ? (int) $responseCode : null;
     }
 
     public function getResponseCode(): ?int
     {
-        return $this->responseCode;
+        return $this->responseCode ?? ResponseCode::UNKNOWN->value;
     }
 }

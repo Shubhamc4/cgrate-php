@@ -1,6 +1,6 @@
 {
   "name": "shubhamc4/cgrate-php",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Core PHP package for integrating with Cgrate payment service (543 Konse Konse)",
   "type": "library",
   "license": "MIT",
@@ -24,11 +24,11 @@
   },
   "autoload": {
     "psr-4": {
-      "Cgrate\\Php\\": "src/"
+      "CGrate\\Php\\": "src/"
     }
   },
   "require": {
-    "php": "^7.4",
+    "php": "^8.2",
     "ext-soap": "*"
   },
   "minimum-stability": "dev",

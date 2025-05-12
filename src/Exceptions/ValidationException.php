@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Cgrate\Php\Exceptions;
+namespace CGrate\Php\Exceptions;
 
-class ValidationException extends CgrateException
+final class ValidationException extends CGrateException
 {
     protected array $errors = [];
 
     /**
      * Create a new validation exception with the given errors.
      *
-     * @param  array $errors The validation errors
-     * @return self
+     * @param  array  $errors  The validation errors
+     * @return  self
      */
     public static function withErrors(array $errors): self
     {
-        $exception = new self('The given data failed validation.');
+        $exception = new self('Validation of the submitted data failed.');
         $exception->errors = $errors;
 
         return $exception;

@@ -2,37 +2,37 @@
 
 declare(strict_types=1);
 
-namespace Cgrate\Php\Validation;
+namespace CGrate\Php\Validation;
 
-use Cgrate\Php\DTOs\PaymentRequestDTO;
-use Cgrate\Php\Exceptions\ValidationException;
+use CGrate\Php\DTOs\PaymentRequestDTO;
+use CGrate\Php\Exceptions\ValidationException;
 
-class PaymentValidator
+final class PaymentValidator
 {
     /**
      * Validate a payment request DTO.
      *
-     * @param  PaymentRequestDTO $payment The payment request to validate
-     * @return bool True if validation passes
-     * @throws ValidationException If validation fails
+     * @param  PaymentRequestDTO  $payment  The payment request to validate
+     * @return  bool  True if validation passes
+     * @throws  ValidationException  If validation fails
      */
     public static function validate(PaymentRequestDTO $payment): bool
     {
         $errors = [];
 
-        if ($payment->getTransactionAmount() <= 0) {
+        if ($payment->transactionAmount <= 0) {
             $errors['transactionAmount'][] = 'The transaction amount must be greater than zero';
         }
 
-        if (! self::isValidMobileNumber($payment->getCustomerMobile())) {
+        if (! self::isValidMobileNumber($payment->customerMobile)) {
             $errors['customerMobile'][] = 'Invalid mobile number. Please ensure it starts with 260 and is a valid Zamtel, MTN, or Airtel number.';
         }
 
-        if (! self::isValidReference($payment->getPaymentReference())) {
+        if (! self::isValidReference($payment->paymentReference)) {
             $errors['paymentReference'][] = 'Payment reference contains invalid characters. Only alphanumeric characters and hyphens are allowed.';
         }
 
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             throw ValidationException::withErrors($errors);
         }
 

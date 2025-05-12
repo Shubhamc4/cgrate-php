@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Cgrate\Php\Validation;
+namespace CGrate\Php\Validation;
 
-use Cgrate\Php\Config\CgrateConfig;
-use Cgrate\Php\Exceptions\ValidationException;
+use CGrate\Php\Config\CGrateConfig;
+use CGrate\Php\Exceptions\ValidationException;
 
 /**
  * Validator for CGrate configuration.
@@ -19,47 +19,46 @@ class ConfigValidator
         'username',
         'password',
         'endpoint',
-        'test_endpoint',
+        'testEndpoint',
     ];
 
     /**
      * Validate CGrate configuration.
      *
      * @param  array $config The configuration array to validate
-     * @return array{username: string, password: string,
-     * endpoint: string, test_endpoint: string, options: array}
+     * @return  array{username:string,password:string,endpoint:string,testEndpoint:string,options:array}
      * The validated and normalized configuration
-     * @throws \Cgrate\Php\Exceptions\ValidationException If configuration is invalid
+     * @throws  \CGrate\Php\Exceptions\ValidationException  If configuration is invalid
      */
     public static function validate(array $config): array
     {
         $errors = [];
 
         foreach (self::$requiredKeys as $key) {
-            if (!isset($config[$key]) || empty($config[$key])) {
+            if (! isset($config[$key]) || empty($config[$key])) {
                 $errors[$key] = "The '{$key}' configuration value is required";
             }
         }
 
-        if (!filter_var($config['endpoint'], FILTER_VALIDATE_URL)) {
+        if (! filter_var($config['endpoint'], FILTER_VALIDATE_URL)) {
             $errors['endpoint'] = 'The endpoint must be a valid URL';
         }
 
-        if (!filter_var($config['test_endpoint'], FILTER_VALIDATE_URL)) {
-            $errors['test_endpoint'] = 'The test_endpoint must be a valid URL';
+        if (! filter_var($config['testEndpoint'], FILTER_VALIDATE_URL)) {
+            $errors['testEndpoint'] = 'The test endpoint must be a valid URL';
         }
 
-        if (!isset($config['test_mode'])) {
-            $config['test_mode'] = false;
+        if (! isset($config['testMode'])) {
+            $config['testMode'] = false;
         }
 
-        if (!isset($config['options']) || !is_array($config['options'])) {
-            $config['options'] = CgrateConfig::getDefaultOptions($config['test_mode']);
+        if (! isset($config['options']) || ! is_array($config['options'])) {
+            $config['options'] = CGrateConfig::getDefaultOptions($config['testMode']);
         } else {
-            $config['options'] = array_merge(CgrateConfig::getDefaultOptions($config['test_mode']), $config['options']);
+            $config['options'] = array_merge(CGrateConfig::getDefaultOptions($config['testMode']), $config['options']);
         }
 
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             throw ValidationException::withErrors($errors);
         }
 

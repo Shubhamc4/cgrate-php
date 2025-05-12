@@ -2,76 +2,65 @@
 
 declare(strict_types=1);
 
-namespace Cgrate\Php\DTOs;
+namespace CGrate\Php\DTOs;
 
-use Cgrate\Php\Enums\ResponseCode;
+use CGrate\Php\Enums\ResponseCode;
 
 /**
- * Data Transfer Object for reverse payment response from Cgrate API.
+ * Data Transfer Object for payment reversal response from CGrate API.
  */
-class ReversePaymentResponseDTO
+final readonly class ReversePaymentResponseDTO
 {
-    private int $responseCode;
-    private string $responseMessage;
-    private ?string $transactionReference;
-
     /**
      * Create a new reverse payment response DTO.
      *
-     * @param int         $responseCode         The response code from the API
-     * @param string      $responseMessage      The response message from the API
-     * @param string|null $transactionReference The transaction reference that was reversed
+     * @param  ResponseCode  $responseCode  The response code from the API
+     * @param  string  $responseMessage  The response message from the API
      */
     public function __construct(
-        int $responseCode,
-        string $responseMessage,
-        ?string $transactionReference = null
+        public ResponseCode $responseCode,
+        public string $responseMessage,
+        public string $transactionReference,
     ) {
-        $this->responseCode = $responseCode;
-        $this->responseMessage = $responseMessage;
-        $this->transactionReference = $transactionReference;
     }
 
+    /**
+     * Create a new reverse payment response DTO from an API response.
+     *
+     * @param  array{responseCode:int,responseMessage:string,transactionReference:string}
+     * $response  The raw response from the API
+     * @return  self  New reverse payment response DTO instance
+     */
     public static function fromResponse(array $response): self
     {
         return new self(
-            ResponseCode::fromValue($response['responseCode']),
-            $response['responseMessage'],
-            $response['transactionReference'] ?? null
+            responseCode: ResponseCode::fromValue($response['responseCode']),
+            responseMessage: $response['responseMessage'],
+            transactionReference: $response['transactionReference'],
         );
     }
 
+    /**
+     * Check if the response indicates a successful operation.
+     *
+     * @return  bool  True if the operation was successful
+     */
     public function isSuccessful(): bool
     {
-        return ResponseCode::isSuccess($this->responseCode);
+        return $this->responseCode->is(ResponseCode::SUCCESS);
     }
 
     /**
      * Convert the DTO to an array.
      *
-     * @return array{responseCode: int, responseMessage: string, transactionReference: string}
+     * @return  array{responseCode:int,responseMessage:string,transactionReference:string}
      */
     public function toArray(): array
     {
         return [
-            'responseCode' => $this->responseCode,
+            'responseCode' => $this->responseCode->value,
             'responseMessage' => $this->responseMessage,
             'transactionReference' => $this->transactionReference,
         ];
-    }
-
-    public function getResponseCode(): int
-    {
-        return $this->responseCode;
-    }
-
-    public function getResponseMessage(): string
-    {
-        return $this->responseMessage;
-    }
-
-    public function getTransactionReference(): ?string
-    {
-        return $this->transactionReference;
     }
 }

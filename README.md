@@ -1,4 +1,4 @@
-# Cgrate PHP Package
+# CGrate PHP Package
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/shubhamc4/cgrate-php.svg)](https://packagist.org/packages/shubhamc4/cgrate-php)
 [![Total Downloads](https://img.shields.io/packagist/dt/shubhamc4/cgrate-php.svg)](https://packagist.org/packages/shubhamc4/cgrate-php)
@@ -41,7 +41,7 @@ For detailed information on the CGrate SOAP API, including setup instructions, r
 
 ## Requirements
 
-- PHP 7.4 or higher
+- PHP 8.2 or higher
 - PHP SOAP extension
 
 ## Installation
@@ -57,30 +57,34 @@ $config = [
     'username' => 'your-username',  // Required
     'password' => 'your-password',  // Required
     'endpoint' => 'https://543.cgrate.co.zm/Konik/KonikWs?wsdl',  // Production endpoint
-    'test_endpoint' => 'http://test.543.cgrate.co.zm:55555/Konik/KonikWs?wsdl',  // Test endpoint
-    'test_mode' => false,  // Set to true for test environment
+    'testEndpoint' => 'http://test.543.cgrate.co.zm:55555/Konik/KonikWs?wsdl',  // Test endpoint
+    'testMode' => false,  // Set to true for test environment
     'options' => [  // SOAP client options
         'soap_version' => SOAP_1_1,
         'connection_timeout' => 30,
         'keep_alive' => false,
         'cache_wsdl' => WSDL_CACHE_NONE,
+        'exceptions' => true,
         'trace' => false,  // Set to true for test environment
-        'exceptions' => false,  // Set to true for test environment
     ],
 ];
 
-$cgrate = new \Cgrate\Php\Services\CgrateService($config);
+$cgrate = new \CGrate\Php\Services\CGrateService($config);
 ```
 
 Alternatively, you can use the config helper:
 
 ```php
-use Cgrate\Php\Config\CgrateConfig;
-use Cgrate\Php\Services\CgrateService;
+use CGrate\Php\Config\CGrateConfig;
+use CGrate\Php\Services\CGrateService;
 
 // Create config with username, password and test mode (optional)
-$config = CgrateConfig::create('your-username', 'your-password', true);
-$cgrate = new CgrateService($config);
+$config = CGrateConfig::create(
+    username: 'your-username', 
+    password: 'your-password', 
+    testMode: true
+);
+$cgrate = new CGrateService($config);
 ```
 
 ## Available Methods
@@ -105,7 +109,7 @@ try {
     } else {
         echo "Error: " . $balance->getResponseMessage();
     }
-} catch (\Cgrate\Php\Exceptions\CgrateException $e) {
+} catch (\CGrate\Php\Exceptions\CGrateException $e) {
     echo "Exception: " . $e->getMessage();
 }
 ```
@@ -114,7 +118,7 @@ try {
 
 ```php
 try {
-    $payment = new \Cgrate\Php\DTOs\PaymentRequestDTO(
+    $payment = new \CGrate\Php\DTOs\PaymentRequestDTO(
         100.50,  // Amount
         '260970000000',  // Customer mobile number
         'PAYMENT-' . time()  // Unique payment reference
@@ -127,7 +131,7 @@ try {
     } else {
         echo "Payment failed: " . $response->getResponseMessage();
     }
-} catch (\Cgrate\Php\Exceptions\CgrateException $e) {
+} catch (\CGrate\Php\Exceptions\CGrateException $e) {
     echo "Exception: " . $e->getMessage();
 }
 ```
@@ -143,7 +147,7 @@ try {
     } else {
         echo "Query failed: " . $status->getResponseMessage();
     }
-} catch (\Cgrate\Php\Exceptions\CgrateException $e) {
+} catch (\CGrate\Php\Exceptions\CGrateException $e) {
     echo "Exception: " . $e->getMessage();
 }
 ```
@@ -159,7 +163,7 @@ try {
     } else {
         echo "Reversal failed: " . $reversal->getResponseMessage();
     }
-} catch (\Cgrate\Php\Exceptions\CgrateException $e) {
+} catch (\CGrate\Php\Exceptions\CGrateException $e) {
     echo "Exception: " . $e->getMessage();
 }
 ```

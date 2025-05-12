@@ -2,31 +2,31 @@
 
 declare(strict_types=1);
 
-namespace Cgrate\Php\Exceptions;
+namespace CGrate\Php\Exceptions;
 
-use Cgrate\Php\Enums\ResponseCode;
+use CGrate\Php\Enums\ResponseCode;
 
-class InvalidResponseException extends CgrateException
+final class InvalidResponseException extends CGrateException
 {
     /**
      * Create a new invalid response exception from a response code.
      *
-     * @param  int $responseCode The response code from the API
-     * @return self
+     * @param  ResponseCode  $responseCode  The response code from the API
+     * @return  self
      */
-    public static function fromResponseCode(int $responseCode): self
+    public static function fromResponseCode(ResponseCode $responseCode): self
     {
         return new self(
-            "CGrate API returned an error: " . ResponseCode::getDescription($responseCode),
-            $responseCode
+            "CGrate API returned an error: ".$responseCode->getDescription(),
+            $responseCode->value
         );
     }
 
     /**
      * Create a new invalid response exception for an unexpected response format.
      *
-     * @param  string $context Additional context about the operation being performed
-     * @return self
+     * @param  string  $context  Additional context about the operation being performed
+     * @return  self
      */
     public static function unexpectedFormat(string $context = ''): self
     {
