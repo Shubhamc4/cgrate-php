@@ -34,20 +34,25 @@ final readonly class CGrateConfig
      * @param  string  $username  CGrate account username
      * @param  string  $password  CGrate account password
      * @param  bool  $testMode  Set to false for production environment
+     * @param  array  $options  SOAP client options
      *
      * @return  array{username: string, password: string,
      * endpoint: string, testEndpoint: string, options: array}
      * CGrate configuration
      */
-    public static function create(string $username, string $password, bool $testMode = false): array
-    {
+    public static function create(
+        string $username,
+        string $password,
+        bool $testMode = false,
+        array $options = []
+    ): array {
         return [
             'username' => $username,
             'password' => $password,
             'endpoint' => self::ENDPOINT,
             'testEndpoint' => self::TEST_ENDPOINT,
             'testMode' => $testMode,
-            'options' => self::getDefaultOptions($testMode)
+            'options' => [...self::getDefaultOptions($testMode), ...$options]
         ];
     }
 }

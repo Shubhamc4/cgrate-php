@@ -13,15 +13,15 @@ final class ConnectionException extends CGrateException
      *
      * @param  SoapFault  $fault  The SoapFault instance
      * @param  string  $context  Additional context about the operation being performed
-     * @return  self
+     * @return  self  New connection exception instance
      */
     public static function fromSoapFault(SoapFault $fault, string $context): self
     {
         return new self(
-            $context.': '.$fault->getMessage(),
-            null,
-            0,
-            $fault
+            message: $context.': '.$fault->getMessage(),
+            responseCode: null,
+            code: 500,
+            previous: $fault
         );
     }
 }

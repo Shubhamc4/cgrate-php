@@ -58,9 +58,9 @@ final readonly class BalanceResponseDTO
      * 
      * @return  string  Formatted balance
      */
-    public function displayBalance($withCode = true): string
+    public function displayBalance(bool $withCode = true): string
     {
-        return ($withCode ? 'ZMW ' : '').number_format($this->balance, 2);
+        return ($withCode ? 'ZMW ' : '').number_format($this->balance ?? 0, 2);
     }
 
     /**

@@ -23,16 +23,20 @@ abstract class CGrateException extends Exception
      *
      * @param  string  $message  The exception message
      * @param  int|null  $responseCode  The response code from the API
-     * @param  int  $code  The exception code
+     * @param  int|null  $code  The exception code
      * @param  Throwable|null  $previous  The previous exception
      */
     public function __construct(
         string $message,
         ?int $responseCode = null,
-        int $code = 0,
+        ?int $code = null,
         ?Throwable $previous = null
     ) {
-        parent::__construct($message, $code ?: $previous->getCode(), $previous);
+        parent::__construct(
+            message: $message,
+            code: $code ?? $previous?->getCode() ?? 0,
+            previous: $previous
+        );
 
         $this->responseCode = $responseCode !== null ? (int) $responseCode : null;
     }

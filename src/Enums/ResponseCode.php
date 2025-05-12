@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Cgrate\Php\Enums;
+namespace CGrate\Php\Enums;
 
 use BackedEnum;
 
 /**
  * This enum defines all possible response codes that can be returned
- * by the Cgrate api endpoints, along with their human-readable descriptions.
+ * by the CGrate api endpoints, along with their human-readable descriptions.
  */
 enum ResponseCode: int
 {

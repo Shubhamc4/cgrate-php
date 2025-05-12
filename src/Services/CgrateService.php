@@ -220,6 +220,6 @@ final class CGrateService
      */
     private function getEndpoint(array $config): string
     {
-        return $config['testEndpoint'] ? $config['testEndpoint'] : $config['endpoint'];
+        return $config['testMode'] ? $config['testEndpoint'] : $config['endpoint'];
     }
 }

@@ -17,9 +17,9 @@ final readonly class PaymentRequestDTO
      * @param  string  $paymentReference  The unique reference for the payment (should be unique per transaction)
      */
     public function __construct(
-        public readonly float $transactionAmount,
-        public readonly string $customerMobile,
-        public readonly string $paymentReference,
+        public float $transactionAmount,
+        public string $customerMobile,
+        public string $paymentReference,
     ) {
     }
 

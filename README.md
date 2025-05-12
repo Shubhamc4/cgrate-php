@@ -24,7 +24,7 @@ A Core PHP package for integrating with the CGrate payment service to process mo
 
 ## Introduction
 
-[CGrate](https://cgrate.co.zm) ([543 Konse Konse](https://www.543.co.zm)) is a payment service provider based in Zambia that facilitates mobile money transactions. This Laravel package allows businesses to:
+[CGrate](https://cgrate.co.zm) ([543 Konse Konse](https://www.543.co.zm)) is a payment service provider based in Zambia that facilitates mobile money transactions. This Core PHP package allows businesses to:
 
 - Process payments from mobile money accounts
 - Check account balances in real-time

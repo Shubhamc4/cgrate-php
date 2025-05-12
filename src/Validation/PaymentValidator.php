@@ -39,11 +39,23 @@ final class PaymentValidator
         return true;
     }
 
+    /**
+     * Check if the mobile number is valid for Zambia.
+     * 
+     * @param  string  $mobileNumber  The mobile number to validate
+     * @return  bool  True if mobile number is valid
+     */
     public static function isValidMobileNumber(string $mobileNumber): bool
     {
         return (bool) preg_match("/^(260)[79][567]\d{7}$/", $mobileNumber);
     }
 
+    /**
+     * Check if the payment reference is valid.
+     * 
+     * @param  string  $reference  The payment reference to validate
+     * @return  bool  True if reference is valid
+     */
     public static function isValidReference(string $reference): bool
     {
         return (bool) preg_match('/^[a-zA-Z0-9\-]+$/', $reference) && strlen($reference) > 0;

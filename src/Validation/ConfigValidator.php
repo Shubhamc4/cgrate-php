@@ -26,7 +26,7 @@ class ConfigValidator
      * Validate CGrate configuration.
      *
      * @param  array $config The configuration array to validate
-     * @return  array{username:string,password:string,endpoint:string,testEndpoint:string,options:array}
+     * @return  array{username:string,password:string,endpoint:string,testEndpoint:string,testMode:bool,options:array}
      * The validated and normalized configuration
      * @throws  \CGrate\Php\Exceptions\ValidationException  If configuration is invalid
      */
