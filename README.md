@@ -17,7 +17,9 @@ A Core PHP package for integrating with the CGrate payment service to process mo
   - [Process Customer Payment](#process-customer-payment)
   - [Query Transaction Status](#query-transaction-status)
   - [Reverse Customer Payment](#reverse-customer-payment)
+  - [Generate Transaction Reference](#generate-transaction-reference)
 - [Data Transfer Objects](#data-transfer-objects)
+- [Response Codes](#response-codes)
 - [Changelog](#changelog)
 - [Credits](#credits)
 - [License](#license)
@@ -89,12 +91,13 @@ $client = new CGrateService($config);
 
 ## Available Methods
 
-| Method                                                 | Description                    |
-| ------------------------------------------------------ | ------------------------------ |
-| `getAccountBalance()`                                  | Get the account balance        |
-| `processCustomerPayment(PaymentRequestDTO $payment)`   | Process a new customer payment |
-| `queryTransactionStatus(string $transactionReference)` | Check the status of a payment  |
-| `reverseCustomerPayment(string $paymentReference)`     | Reverse a customer payment     |
+| Method                                                 | Description                             |
+| ------------------------------------------------------ | --------------------------------------- |
+| `getAccountBalance()`                                  | Get the account balance                 |
+| `processCustomerPayment(PaymentRequestDTO $payment)`   | Process a new customer payment          |
+| `queryTransactionStatus(string $transactionReference)` | Check the status of a payment           |
+| `reverseCustomerPayment(string $paymentReference)`     | Reverse a customer payment              |
+| `generateTransactionReference(string $prefix = 'CG')`  | Generate a unique transaction reference |
 
 ## Usage
 
@@ -168,9 +171,21 @@ try {
 }
 ```
 
+### Generate Transaction Reference
+
+```php
+// Generate a reference with the default prefix 'CG'
+$reference = \CGrate\Php\Services\CGrateService::generateTransactionReference();
+// Result: CG-1714504562-a1b2c3d4e5f6
+
+// Generate a reference with a custom prefix
+$reference = \CGrate\Php\Services\CGrateService::generateTransactionReference('ORDER');
+// Result: ORDER-1714504562-a1b2c3d4e5f6
+```
+
 ## Data Transfer Objects
 
-The package uses DTOs to handle API requests and responses:
+The package uses read-only DTOs to handle API requests and responses:
 
 ### Request DTOs
 
@@ -181,6 +196,22 @@ The package uses DTOs to handle API requests and responses:
 - `BalanceResponseDTO`: Contains account balance information
 - `PaymentResponseDTO`: Contains payment response information
 - `ReversePaymentResponseDTO`: Contains payment reversal response information
+
+## Response Codes
+
+The package includes a comprehensive `ResponseCode` enum that provides all possible response codes from the CGrate API along with their descriptions:
+
+```php
+use CGrate\Php\Enums\ResponseCode;
+
+// Check if a response matches a specific code
+if ($response->responseCode->is(ResponseCode::SUCCESS)) {
+    // Handle successful response
+}
+
+// Get the description for any response code
+$description = ResponseCode::descriptionFromValue(0); // "Success"
+```
 
 ## Changelog
 

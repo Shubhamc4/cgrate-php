@@ -64,6 +64,16 @@ final readonly class BalanceResponseDTO
     }
 
     /**
+     * Format the balance
+     * 
+     * @return  float  Formatted balance
+     */
+    public function formatBalance(): float
+    {
+        return round($this->balance ?? 0, 2);
+    }
+
+    /**
      * Convert the DTO to an array.
      *
      * @return  array{responseCode:int,responseMessage:string,balance:float,displayBalance:string}
@@ -73,7 +83,7 @@ final readonly class BalanceResponseDTO
         return [
             'responseCode' => $this->responseCode->value,
             'responseMessage' => $this->responseCode->getDescription(),
-            'balance' => $this->displayBalance(false),
+            'balance' => $this->formatBalance(),
             'displayBalance' => $this->displayBalance(),
         ];
     }

@@ -177,6 +177,21 @@ final class CGrateService
     }
 
     /**
+     * Generate a unique transaction reference.
+     *
+     * @param  string  $prefix  The prefix for the transaction reference
+     * @return  string  The unique generated transaction reference
+     */
+    public static function generateTransactionReference(string $prefix = 'CG'): string
+    {
+        return sprintf(
+            rtrim($prefix, '-').'-%d-%s',
+            round(microtime(true) * 100),
+            bin2hex(random_bytes(6))
+        );
+    }
+
+    /**
      * Initialize the SOAP client.
      *
      * @param  array{username:string,password:string,endpoint:string,testEndpoint:string,options:array}
