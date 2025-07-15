@@ -42,6 +42,7 @@ enum ResponseCode: int
     case RECONCILIATION_FLAG_INCONSISTENT = 153;
     case ERROR_RECEIVING_RECONCILIATION_TOTAL = 154;
     case NO_TRANSACTIONS_FOUND = 213;
+    case FUNCTION_NOT_IMPLEMENTED = 724;
 
     /**
      * Create a ResponseCode enum from a string or integer value.
@@ -116,6 +117,7 @@ enum ResponseCode: int
             self::RECONCILIATION_FLAG_INCONSISTENT => 'Reconciliation flag not consistent with count',
             self::ERROR_RECEIVING_RECONCILIATION_TOTAL => 'Error receiving reconciliation total',
             self::NO_TRANSACTIONS_FOUND => 'No transactions found',
+            self::FUNCTION_NOT_IMPLEMENTED => 'Function not implemented',
         };
     }
 }

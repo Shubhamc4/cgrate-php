@@ -95,7 +95,7 @@ $client = new CGrateService($config);
 | ------------------------------------------------------ | --------------------------------------- |
 | `getAccountBalance()`                                  | Get the account balance                 |
 | `processCustomerPayment(PaymentRequestDTO $payment)`   | Process a new customer payment          |
-| `queryTransactionStatus(string $transactionReference)` | Check the status of a payment           |
+| `queryCustomerPayment(string $transactionReference)`   | Check the status of a payment           |
 | `reverseCustomerPayment(string $paymentReference)`     | Reverse a customer payment              |
 | `generateTransactionReference(string $prefix = 'CG')`  | Generate a unique transaction reference |
 
@@ -143,7 +143,7 @@ try {
 
 ```php
 try {
-    $response = $client->queryTransactionStatus('YOUR-TRANSACTION-REFERENCE');
+    $response = $client->queryCustomerPayment('YOUR-TRANSACTION-REFERENCE');
 
     if ($response->isSuccessful()) {
         echo "Transaction status: " . $response->responseMessage;

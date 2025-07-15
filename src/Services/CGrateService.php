@@ -109,22 +109,22 @@ final class CGrateService
     }
 
     /**
-     * Query the status of a transaction.
+     * Query the status of a customer transaction.
      *
      * @param  string $transactionReference The reference of the transaction to query
      * @return PaymentResponseDTO The transaction status response
      * @throws \CGrate\Php\Exceptions\ConnectionException If connection to the API fails
      * @throws \CGrate\Php\Exceptions\InvalidResponseException If the API returns an error response
      */
-    public function queryTransactionStatus(string $transactionReference): PaymentResponseDTO
+    public function queryCustomerPayment(string $transactionReference): PaymentResponseDTO
     {
         try {
-            $response = $this->client->queryTransactionStatus(
-                ['transactionReference' => $transactionReference]
+            $response = $this->client->queryCustomerPayment(
+                ['paymentReference' => $transactionReference]
             );
 
             if (! is_object($response) || ! property_exists($response, 'return')) {
-                throw InvalidResponseException::unexpectedFormat('queryTransactionStatus');
+                throw InvalidResponseException::unexpectedFormat('queryCustomerPayment');
             }
 
             $dto = PaymentResponseDTO::fromResponse(
