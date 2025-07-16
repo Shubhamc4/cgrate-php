@@ -14,10 +14,12 @@ A Core PHP package for integrating with the CGrate payment service to process mo
 - [Configuration](#configuration)
 - [Usage](#usage)
   - [Check Account Balance](#check-account-balance)
+  - [Get Available Cash Deposit Issuers](#get-available-cash-deposit-issuers)
   - [Process Customer Payment](#process-customer-payment)
-  - [Query Transaction Status](#query-transaction-status)
-  - [Reverse Customer Payment](#reverse-customer-payment)
+  - [Query Customer Payment](#query-customer-payment)
+  - [Process Cash Deposit](#process-cash-deposit)
   - [Generate Transaction Reference](#generate-transaction-reference)
+  - [Get Customer Account Issuer Name](#get-customer-issuer-name)
 - [Data Transfer Objects](#data-transfer-objects)
 - [Response Codes](#response-codes)
 - [Changelog](#changelog)
@@ -89,15 +91,22 @@ $config = CGrateConfig::create(
 $client = new CGrateService($config);
 ```
 
-## Available Methods
+## Available Soap Methods
 
-| Method                                                 | Description                             |
-| ------------------------------------------------------ | --------------------------------------- |
-| `getAccountBalance()`                                  | Get the account balance                 |
-| `processCustomerPayment(PaymentRequestDTO $payment)`   | Process a new customer payment          |
-| `queryCustomerPayment(string $transactionReference)`   | Check the status of a payment           |
-| `reverseCustomerPayment(string $paymentReference)`     | Reverse a customer payment              |
-| `generateTransactionReference(string $prefix = 'CG')`  | Generate a unique transaction reference |
+| Method                                               | Description                            |
+| ---------------------------------------------------- | -------------------------------------- |
+| `getAccountBalance()`                                | Get the account balance                |
+| `getAvailableCashDepositIssuers()`                   | Get Available Cash Deposit Issuers     |
+| `processCustomerPayment(PaymentRequestDTO $payment)` | Process a new customer payment         |
+| `queryCustomerPayment(string $transactionReference)` | Check the status of a customer payment |
+| `processCashDeposit(string $paymentReference)`       | Process Cash Deposit                   |
+
+## Available Static Helper Methods
+
+| Method                                                | Description                             |
+| ----------------------------------------------------- | --------------------------------------- |
+| `generateTransactionReference(string $prefix = 'CG')` | Generate a unique transaction reference |
+| `getCustomerIssuerName(string $customerAccount)`      | Get Customer Account Issuer Name        |
 
 ## Usage
 
@@ -112,6 +121,17 @@ try {
     } else {
         echo "Error: " . $response->responseMessage;
     }
+} catch (\CGrate\Php\Exceptions\CGrateException $e) {
+    echo "Exception: " . $e->getMessage();
+}
+```
+
+### Get Available Cash Deposit Issuers
+
+```php
+try {
+    $response = $client->getAvailableCashDepositIssuers();
+    print_r($response);
 } catch (\CGrate\Php\Exceptions\CGrateException $e) {
     echo "Exception: " . $e->getMessage();
 }
@@ -139,7 +159,7 @@ try {
 }
 ```
 
-### Query Transaction Status
+### Query Customer Payment
 
 ```php
 try {
@@ -155,16 +175,24 @@ try {
 }
 ```
 
-### Reverse Customer Payment
+### Process Cash Deposit
 
 ```php
 try {
-    $response = $client->reverseCustomerPayment('YOUR-PAYMENT-REFERENCE');
+    $customerAccount = '260970000000';  // Customer mobile number
+    $cashDeposit = new \CGrate\Php\DTOs\CashDepositRequestDTO(
+        10.50,  // Amount
+        $customerAccount,
+        \CGrate\Php\Services\CGrateService::getCustomerIssuerName($customerAccount),
+        'CD-' . time()  // Unique cash deposit reference
+    );
+
+    $response = $client->processCashDeposit($cashDeposit);
 
     if ($response->isSuccessful()) {
-        echo "Payment reversed successfully";
+        echo "Depositor reference: " . $response->depositorReference;
     } else {
-        echo "Reversal failed: " . $response->responseMessage;
+        echo "Cash deposit failed: " . $response->responseMessage;
     }
 } catch (\CGrate\Php\Exceptions\CGrateException $e) {
     echo "Exception: " . $e->getMessage();
@@ -183,6 +211,24 @@ $reference = \CGrate\Php\Services\CGrateService::generateTransactionReference('O
 // Result: ORDER-1714504562-a1b2c3d4e5f6
 ```
 
+### Get Customer Account Issuer Name
+
+```php
+// Get issuer name using the the customer account
+
+$issuerName = \CGrate\Php\Services\CGrateService::getCustomerIssuerName('26097XXXXXXX');
+// Result: Airtel
+
+$issuerName = \CGrate\Php\Services\CGrateService::getCustomerIssuerName('26076XXXXXXX');
+// Result: MTN
+
+$issuerName = \CGrate\Php\Services\CGrateService::getCustomerIssuerName('26095XXXXXXX');
+// Result: Zamtel
+
+$issuerName = \CGrate\Php\Services\CGrateService::getCustomerIssuerName('26065XXXXXXX');
+// Result: Unknown Issuer
+```
+
 ## Data Transfer Objects
 
 The package uses read-only DTOs to handle API requests and responses:
@@ -190,12 +236,13 @@ The package uses read-only DTOs to handle API requests and responses:
 ### Request DTOs
 
 - `PaymentRequestDTO`: Contains payment request data (transactionAmount, customerMobile, paymentReference)
+- `CashDepositRequestDTO`: Contains cash deposit request data (transactionAmount, customerAccount, issuerName, depositorReference)
 
 ### Response DTOs
 
 - `BalanceResponseDTO`: Contains account balance information
 - `PaymentResponseDTO`: Contains payment response information
-- `ReversePaymentResponseDTO`: Contains payment reversal response information
+- `CashDepositResponseDTO`: Contains cash deposit response information
 
 ## Response Codes
 

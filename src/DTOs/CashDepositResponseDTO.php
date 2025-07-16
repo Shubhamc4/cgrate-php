@@ -7,12 +7,12 @@ namespace CGrate\Php\DTOs;
 use CGrate\Php\Enums\ResponseCode;
 
 /**
- * Data Transfer Object for payment reversal response from CGrate API.
+ * Data Transfer Object for cash payment response from CGrate API.
  */
-final readonly class ReversePaymentResponseDTO
+final readonly class CashDepositResponseDTO
 {
     /**
-     * Create a new reverse payment response DTO.
+     * Create a new cash payment response DTO.
      *
      * @param  ResponseCode  $responseCode  The response code from the API
      * @param  string  $responseMessage  The response message from the API
@@ -20,23 +20,23 @@ final readonly class ReversePaymentResponseDTO
     public function __construct(
         public ResponseCode $responseCode,
         public string $responseMessage,
-        public string $transactionReference,
+        public string $depositorReference,
     ) {
     }
 
     /**
-     * Create a new reverse payment response DTO from an API response.
+     * Create a new cash payment response DTO from an API response.
      *
-     * @param  array{responseCode:int,responseMessage:string,transactionReference:string}
+     * @param  array{responseCode:int,responseMessage:string,depositorReference:string}
      * $response  The raw response from the API
-     * @return  self  New reverse payment response DTO instance
+     * @return  self  New cash payment response DTO instance
      */
     public static function fromResponse(array $response): self
     {
         return new self(
             responseCode: ResponseCode::fromValue($response['responseCode']),
             responseMessage: $response['responseMessage'],
-            transactionReference: $response['transactionReference'],
+            depositorReference: $response['depositorReference'],
         );
     }
 
@@ -53,14 +53,14 @@ final readonly class ReversePaymentResponseDTO
     /**
      * Convert the DTO to an array.
      *
-     * @return  array{responseCode:int,responseMessage:string,transactionReference:string}
+     * @return  array{responseCode:int,responseMessage:string,depositorReference:string}
      */
     public function toArray(): array
     {
         return [
             'responseCode' => $this->responseCode->value,
             'responseMessage' => $this->responseMessage,
-            'transactionReference' => $this->transactionReference,
+            'depositorReference' => $this->depositorReference,
         ];
     }
 }

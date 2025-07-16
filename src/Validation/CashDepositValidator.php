@@ -4,32 +4,32 @@ declare(strict_types=1);
 
 namespace CGrate\Php\Validation;
 
-use CGrate\Php\DTOs\PaymentRequestDTO;
+use CGrate\Php\DTOs\CashDepositRequestDTO;
 use CGrate\Php\Exceptions\ValidationException;
 
-final class PaymentValidator
+final class CashDepositValidator
 {
     /**
-     * Validate a payment request DTO.
+     * Validate a cash deposit request DTO.
      *
-     * @param  PaymentRequestDTO  $payment  The payment request to validate
+     * @param  \CGrate\Php\DTOs\CashDepositRequestDTO  $cashDeposit  The cash deposit request to validate
      * @return  bool  True if validation passes
      * @throws  ValidationException  If validation fails
      */
-    public static function validate(PaymentRequestDTO $payment): bool
+    public static function validate(CashDepositRequestDTO $cashDeposit): bool
     {
         $errors = [];
 
-        if ($payment->transactionAmount <= 0) {
+        if ($cashDeposit->transactionAmount <= 0) {
             $errors['transactionAmount'][] = 'The transaction amount must be greater than zero';
         }
 
-        if (! self::isValidMobileNumber($payment->customerMobile)) {
-            $errors['customerMobile'][] = 'Invalid mobile number. Please ensure it starts with 260 and is a valid Zamtel, MTN, or Airtel number.';
+        if (! self::isValidMobileNumber($cashDeposit->customerAccount)) {
+            $errors['customerAccount'][] = 'Invalid mobile number. Please ensure it starts with 260 and is a valid Zamtel, MTN, or Airtel number.';
         }
 
-        if (! self::isValidReference($payment->paymentReference)) {
-            $errors['paymentReference'][] = 'Payment reference contains invalid characters. Only alphanumeric characters and hyphens are allowed.';
+        if (! self::isValidReference($cashDeposit->depositorReference)) {
+            $errors['depositorReference'][] = 'Deposit reference contains invalid characters. Only alphanumeric characters and hyphens are allowed.';
         }
 
         if (! empty($errors)) {
@@ -47,13 +47,13 @@ final class PaymentValidator
      */
     public static function isValidMobileNumber(string $mobileNumber): bool
     {
-        return (bool) preg_match("/^(260)(97|77|57|76|96|95|75)\d{7}$/", $mobileNumber);
+        return (bool) preg_match("/^(260|0)(97|77|57|76|96|95|75)\d{7}$/", $mobileNumber);
     }
 
     /**
-     * Check if the payment reference is valid.
+     * Check if the deposit reference is valid.
      * 
-     * @param  string  $reference  The payment reference to validate
+     * @param  string  $reference  The deposit reference to validate
      * @return  bool  True if reference is valid
      */
     public static function isValidReference(string $reference): bool

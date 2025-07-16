@@ -7,9 +7,11 @@ namespace CGrate\Php\Services;
 use CGrate\Php\DTOs\BalanceResponseDTO;
 use CGrate\Php\DTOs\PaymentRequestDTO;
 use CGrate\Php\DTOs\PaymentResponseDTO;
-use CGrate\Php\DTOs\ReversePaymentResponseDTO;
+use CGrate\Php\DTOs\CashDepositRequestDTO;
+use CGrate\Php\DTOs\CashDepositResponseDTO;
 use CGrate\Php\Exceptions\ConnectionException;
 use CGrate\Php\Exceptions\InvalidResponseException;
+use CGrate\Php\Validation\CashDepositValidator;
 use CGrate\Php\Validation\ConfigValidator;
 use CGrate\Php\Validation\PaymentValidator;
 use SoapClient;
@@ -54,9 +56,7 @@ final class CGrateService
         try {
             $response = $this->client->getAccountBalance();
 
-            if (! is_object($response) || ! property_exists($response, 'return')) {
-                throw InvalidResponseException::unexpectedFormat('getAccountBalance');
-            }
+            $this->validateResponse($response, __METHOD__);
 
             $dto = BalanceResponseDTO::fromResponse((array) $response->return);
 
@@ -67,6 +67,18 @@ final class CGrateService
             return $dto;
         } catch (SoapFault $e) {
             throw ConnectionException::fromSoapFault($e, 'Failed to get account balance');
+        }
+    }
+    public function getAvailableCashDepositIssuers(): array
+    {
+        try {
+            $response = $this->client->getAvailableCashDepositIssuers();
+
+            $this->validateResponse($response, __METHOD__);
+
+            return (array) $response->return ?? [];
+        } catch (SoapFault $e) {
+            throw ConnectionException::fromSoapFault($e, 'Failed to get available cash deposit issuers');
         }
     }
 
@@ -86,9 +98,7 @@ final class CGrateService
 
             $response = $this->client->processCustomerPayment($payment->toArray());
 
-            if (! is_object($response) || ! property_exists($response, 'return')) {
-                throw InvalidResponseException::unexpectedFormat('processCustomerPayment');
-            }
+            $this->validateResponse($response, __METHOD__);
 
             $dto = PaymentResponseDTO::fromResponse(
                 (array) $response->return + [
@@ -123,9 +133,7 @@ final class CGrateService
                 ['paymentReference' => $transactionReference]
             );
 
-            if (! is_object($response) || ! property_exists($response, 'return')) {
-                throw InvalidResponseException::unexpectedFormat('queryCustomerPayment');
-            }
+            $this->validateResponse($response, __METHOD__);
 
             $dto = PaymentResponseDTO::fromResponse(
                 (array) $response->return + ['transactionReference' => $transactionReference]
@@ -142,27 +150,25 @@ final class CGrateService
     }
 
     /**
-     * Reverse a customer payment.
+     * Cash deposit to a customer account.
      *
-     * @param  string  $paymentReference  The reference of the payment to reverse
-     * @return  \CGrate\Php\DTOs\ReversePaymentResponseDTO  The reverse payment response
+     * @param  \CGrate\Php\DTOs\CashDepositRequestDTO  $cashDeposit  The cash deposit request data
+     * @return  \CGrate\Php\DTOs\CashDepositResponseDTO  The cash deposit response
      * @throws  \CGrate\Php\Exceptions\ConnectionException  If connection to the API fails
      * @throws  \CGrate\Php\Exceptions\InvalidResponseException  If the API returns an error response
      */
-    public function reverseCustomerPayment(string $paymentReference): ReversePaymentResponseDTO
+    public function processCashDeposit(CashDepositRequestDTO $cashDeposit): CashDepositResponseDTO
     {
         try {
-            $response = $this->client->reverseCustomerPayment(
-                ['paymentReference' => $paymentReference]
-            );
+            CashDepositValidator::validate($cashDeposit);
 
-            if (! is_object($response) || ! property_exists($response, 'return')) {
-                throw InvalidResponseException::unexpectedFormat('reverseCustomerPayment');
-            }
+            $response = $this->client->processCashDeposit($cashDeposit->toArray());
 
-            $dto = ReversePaymentResponseDTO::fromResponse(
+            $this->validateResponse($response, __METHOD__);
+
+            $dto = CashDepositResponseDTO::fromResponse(
                 (array) $response->return + [
-                    'transactionReference' => $paymentReference,
+                    'depositorReference' => $cashDeposit->depositorReference,
                 ]
             );
 
@@ -189,6 +195,28 @@ final class CGrateService
             round(microtime(true) * 100),
             bin2hex(random_bytes(6))
         );
+    }
+
+    /**
+     * Determines the issuer name for a 543 payment service based on the customer's contact number.
+     *
+     * @param  string  $customerAccount  The customer's mobile number (e.g., "260XXXXXXXXX")
+     * @return  string  The identified issuer name from the provided list, or "Unknown Issuer"
+     */
+    public static function getCustomerIssuerName(string $customerAccount): string
+    {
+        preg_match(
+            '/^(?:260|0)?(\d{2})\d*$/',
+            trim($customerAccount),
+            $prefix
+        );
+
+        return match ($prefix[1]) {
+            '97', '77', '57' => 'Airtel',
+            '76', '96' => 'MTN',
+            '95', '75' => 'Zamtel',
+            default => 'Unknown Issuer',
+        };
     }
 
     /**
@@ -236,5 +264,19 @@ final class CGrateService
     private function getEndpoint(array $config): string
     {
         return $config['testMode'] ? $config['testEndpoint'] : $config['endpoint'];
+    }
+
+    /**
+     * Validate the soap client response and check if the return property exists
+     *
+     * @param  object  $response  soap client response object
+     * @param  string  $method  method name where this is called
+     * @return  void
+     */
+    private function validateResponse(object $response, string $method): void
+    {
+        if (! is_object($response) || ! property_exists($response, 'return')) {
+            throw InvalidResponseException::unexpectedFormat($method);
+        }
     }
 }

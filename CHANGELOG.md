@@ -2,6 +2,13 @@
 
 All notable changes to `cgrate-php` will be documented in this file.
 
+## 2.0.2 - 2025-07-16
+
+- Added getAvailableCashDepositIssuers method to the list of all the valid cash deposit issuer
+- Added processCashDeposit method to process cash deposit
+- Added queryCustomerPayment method to query the customer payment status
+- Removed invalid queryTransactionStatus and reverseCustomerPayment method
+
 ## 2.0.1 - 2025-05-12
 
 - Fixed namespace inconsistency in ResponseCode enum (Cgrate → CGrate)
