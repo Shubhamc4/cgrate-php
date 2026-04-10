@@ -22,7 +22,7 @@ final readonly class CGrateConfig
             'soap_version' => SOAP_1_1,
             'connection_timeout' => 30,
             'keep_alive' => false,
-            'cache_wsdl' => WSDL_CACHE_NONE,
+            'cache_wsdl' => $testMode ? WSDL_CACHE_NONE : WSDL_CACHE_DISK,
             'exceptions' => true,
             'trace' => $testMode,
         ];

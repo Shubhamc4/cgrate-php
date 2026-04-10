@@ -34,9 +34,9 @@ final readonly class CashDepositResponseDTO
     public static function fromResponse(array $response): self
     {
         return new self(
-            responseCode: ResponseCode::fromValue($response['responseCode']),
-            responseMessage: $response['responseMessage'],
-            depositorReference: $response['depositorReference'],
+            responseCode: ResponseCode::fromValue($response['responseCode'] ?? 0),
+            responseMessage: $response['responseMessage'] ?? '',
+            depositorReference: $response['depositorReference'] ?? '',
         );
     }
 

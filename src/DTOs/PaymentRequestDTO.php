@@ -12,7 +12,7 @@ final readonly class PaymentRequestDTO
     /**
      * Create a new payment request DTO.
      *
-     * @param  float  $transactionAmount  The amount of the transaction (must be positive)
+     * @param  float  $transactionAmount  The amount of the transaction (must be positive, max 2 decimal places)
      * @param  string  $customerMobile  The mobile number of the customer (should be in format 2609XXXXXXXX)
      * @param  string  $paymentReference  The unique reference for the payment (should be unique per transaction)
      */
@@ -26,7 +26,7 @@ final readonly class PaymentRequestDTO
     /**
      * Create a new payment request DTO.
      *
-     * @param  float  $transactionAmount  The amount of the transaction (must be positive)
+     * @param  float  $transactionAmount  The amount of the transaction (must be positive, max 2 decimal places)
      * @param  string  $customerMobile  The mobile number of the customer (should be in format 2609XXXXXXXX)
      * @param  string  $paymentReference  The unique reference for the payment (should be unique per transaction)
      * @return  self  New payment request DTO instance

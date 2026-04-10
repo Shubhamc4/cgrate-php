@@ -24,12 +24,12 @@ final class PaymentValidator
             $errors['transactionAmount'][] = 'The transaction amount must be greater than zero';
         }
 
-        if (! self::isValidMobileNumber($payment->customerMobile)) {
-            $errors['customerMobile'][] = 'Invalid mobile number. Please ensure it starts with 260 and is a valid Zamtel, MTN, or Airtel number.';
+        if (! CommonValidator::isValidMobileNumber($payment->customerMobile)) {
+            $errors['customerMobile'][] = CommonValidator::INVALID_MOBILE_NUMBER_MESSAGE;
         }
 
-        if (! self::isValidReference($payment->paymentReference)) {
-            $errors['paymentReference'][] = 'Payment reference contains invalid characters. Only alphanumeric characters and hyphens are allowed.';
+        if (! CommonValidator::isValidReference($payment->paymentReference)) {
+            $errors['paymentReference'][] = CommonValidator::INVALID_REFERENCE_MESSAGE;
         }
 
         if (! empty($errors)) {
@@ -37,27 +37,5 @@ final class PaymentValidator
         }
 
         return true;
-    }
-
-    /**
-     * Check if the mobile number is valid for Zambia.
-     * 
-     * @param  string  $mobileNumber  The mobile number to validate
-     * @return  bool  True if mobile number is valid
-     */
-    public static function isValidMobileNumber(string $mobileNumber): bool
-    {
-        return (bool) preg_match("/^(260)(97|77|57|76|96|95|75)\d{7}$/", $mobileNumber);
-    }
-
-    /**
-     * Check if the payment reference is valid.
-     * 
-     * @param  string  $reference  The payment reference to validate
-     * @return  bool  True if reference is valid
-     */
-    public static function isValidReference(string $reference): bool
-    {
-        return (bool) preg_match('/^[a-zA-Z0-9\-]+$/', $reference) && strlen($reference) > 0;
     }
 }

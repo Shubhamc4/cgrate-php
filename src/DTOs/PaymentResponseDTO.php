@@ -42,8 +42,8 @@ final readonly class PaymentResponseDTO
     public static function fromResponse(array $response): self
     {
         return new self(
-            responseCode: ResponseCode::fromValue($response['responseCode']),
-            responseMessage: $response['responseMessage'],
+            responseCode: ResponseCode::fromValue($response['responseCode'] ?? 0),
+            responseMessage: $response['responseMessage'] ?? '',
             paymentID: $response['paymentID'] ?? null,
             customerMobile: $response['customerMobile'] ?? null,
             transactionReference: $response['transactionReference'] ?? null,

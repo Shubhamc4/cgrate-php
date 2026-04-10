@@ -16,7 +16,7 @@ final readonly class BalanceResponseDTO
      *
      * @param  ResponseCode  $responseCode  The response code from the API
      * @param  string  $responseMessage  The response message from the API
-     * @param  float|null  $balance  The account balance, if successful
+     * @param  float|null  $balance  The account balance, if successful (max 2 decimal places)
      */
     public function __construct(
         public ResponseCode $responseCode,
@@ -35,8 +35,8 @@ final readonly class BalanceResponseDTO
     public static function fromResponse(array $response): self
     {
         return new self(
-            responseCode: ResponseCode::fromValue($response['responseCode']),
-            responseMessage: $response['responseMessage'],
+            responseCode: ResponseCode::fromValue($response['responseCode'] ?? 0),
+            responseMessage: $response['responseMessage'] ?? '',
             balance: isset($response['balance']) ? (float) $response['balance'] : null
         );
     }
@@ -82,7 +82,7 @@ final readonly class BalanceResponseDTO
     {
         return [
             'responseCode' => $this->responseCode->value,
-            'responseMessage' => $this->responseCode->getDescription(),
+            'responseMessage' => $this->responseMessage,
             'balance' => $this->formatBalance(),
             'displayBalance' => $this->displayBalance(),
         ];

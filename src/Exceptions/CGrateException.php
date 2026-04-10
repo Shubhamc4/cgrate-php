@@ -41,7 +41,7 @@ abstract class CGrateException extends Exception
         $this->responseCode = $responseCode !== null ? (int) $responseCode : null;
     }
 
-    public function getResponseCode(): ?int
+    public function getResponseCode(): int
     {
         return $this->responseCode ?? ResponseCode::UNKNOWN->value;
     }

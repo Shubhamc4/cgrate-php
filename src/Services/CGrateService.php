@@ -53,33 +53,45 @@ final class CGrateService
      */
     public function getAccountBalance(): BalanceResponseDTO
     {
-        try {
-            $response = $this->client->getAccountBalance();
+        $data = $this->callSoap(
+            'getAccountBalance',
+            'Failed to get account balance'
+        );
 
-            $this->validateResponse($response, __METHOD__);
+        $dto = BalanceResponseDTO::fromResponse($data);
 
-            $dto = BalanceResponseDTO::fromResponse((array) $response->return);
-
-            if (! $dto->isSuccessful()) {
-                throw InvalidResponseException::fromResponseCode($dto->responseCode);
-            }
-
-            return $dto;
-        } catch (SoapFault $e) {
-            throw ConnectionException::fromSoapFault($e, 'Failed to get account balance');
+        if (! $dto->isSuccessful()) {
+            throw InvalidResponseException::fromResponseCode($dto->responseCode);
         }
+
+        return $dto;
     }
+
+    /**
+     * Get available cash deposit issuers from CGrate.
+     *
+     * @return  string[]  The list of available cash deposit issuer names
+     * @throws  \CGrate\Php\Exceptions\ConnectionException  If connection to the API fails
+     * @throws  \CGrate\Php\Exceptions\InvalidResponseException  If the API returns an unexpected response
+     */
     public function getAvailableCashDepositIssuers(): array
     {
-        try {
-            $response = $this->client->getAvailableCashDepositIssuers();
+        $issuers = $this->callSoap(
+            'getAvailableCashDepositIssuers',
+            'Failed to get available cash deposit issuers'
+        );
 
-            $this->validateResponse($response, __METHOD__);
-
-            return (array) $response->return ?? [];
-        } catch (SoapFault $e) {
-            throw ConnectionException::fromSoapFault($e, 'Failed to get available cash deposit issuers');
+        if (empty($issuers)) {
+            throw InvalidResponseException::unexpectedFormat('getAvailableCashDepositIssuers');
         }
+
+        foreach ($issuers as $issuer) {
+            if (! is_string($issuer) || trim($issuer) === '') {
+                throw InvalidResponseException::unexpectedFormat('getAvailableCashDepositIssuers');
+            }
+        }
+
+        return $issuers;
     }
 
     /**
@@ -93,29 +105,25 @@ final class CGrateService
      */
     public function processCustomerPayment(PaymentRequestDTO $payment): PaymentResponseDTO
     {
-        try {
-            PaymentValidator::validate($payment);
+        PaymentValidator::validate($payment);
 
-            $response = $this->client->processCustomerPayment($payment->toArray());
+        $data = $this->callSoap(
+            'processCustomerPayment',
+            'Failed to process customer payment',
+            $payment->toArray()
+        );
 
-            $this->validateResponse($response, __METHOD__);
+        $dto = PaymentResponseDTO::fromResponse($data + [
+            'customerMobile' => $payment->customerMobile,
+            'transactionReference' => $payment->paymentReference,
+            'transactionAmount' => $payment->transactionAmount,
+        ]);
 
-            $dto = PaymentResponseDTO::fromResponse(
-                (array) $response->return + [
-                    'customerMobile' => $payment->customerMobile,
-                    'transactionReference' => $payment->paymentReference,
-                    'transactionAmount' => $payment->transactionAmount,
-                ]
-            );
-
-            if (! $dto->isSuccessful()) {
-                throw InvalidResponseException::fromResponseCode($dto->responseCode);
-            }
-
-            return $dto;
-        } catch (SoapFault $e) {
-            throw ConnectionException::fromSoapFault($e, 'Failed to process customer payment');
+        if (! $dto->isSuccessful()) {
+            throw InvalidResponseException::fromResponseCode($dto->responseCode);
         }
+
+        return $dto;
     }
 
     /**
@@ -128,25 +136,19 @@ final class CGrateService
      */
     public function queryCustomerPayment(string $transactionReference): PaymentResponseDTO
     {
-        try {
-            $response = $this->client->queryCustomerPayment(
-                ['paymentReference' => $transactionReference]
-            );
+        $data = $this->callSoap(
+            'queryCustomerPayment',
+            'Failed to query transaction status',
+            ['paymentReference' => $transactionReference]
+        );
 
-            $this->validateResponse($response, __METHOD__);
+        $dto = PaymentResponseDTO::fromResponse($data + ['transactionReference' => $transactionReference]);
 
-            $dto = PaymentResponseDTO::fromResponse(
-                (array) $response->return + ['transactionReference' => $transactionReference]
-            );
-
-            if (! $dto->isSuccessful()) {
-                throw InvalidResponseException::fromResponseCode($dto->responseCode);
-            }
-
-            return $dto;
-        } catch (SoapFault $e) {
-            throw ConnectionException::fromSoapFault($e, 'Failed to query transaction status');
+        if (! $dto->isSuccessful()) {
+            throw InvalidResponseException::fromResponseCode($dto->responseCode);
         }
+
+        return $dto;
     }
 
     /**
@@ -159,27 +161,23 @@ final class CGrateService
      */
     public function processCashDeposit(CashDepositRequestDTO $cashDeposit): CashDepositResponseDTO
     {
-        try {
-            CashDepositValidator::validate($cashDeposit);
+        CashDepositValidator::validate($cashDeposit);
 
-            $response = $this->client->processCashDeposit($cashDeposit->toArray());
+        $data = $this->callSoap(
+            'processCashDeposit',
+            'Failed to process cash deposit',
+            $cashDeposit->toArray()
+        );
 
-            $this->validateResponse($response, __METHOD__);
+        $dto = CashDepositResponseDTO::fromResponse($data + [
+            'depositorReference' => $cashDeposit->depositorReference,
+        ]);
 
-            $dto = CashDepositResponseDTO::fromResponse(
-                (array) $response->return + [
-                    'depositorReference' => $cashDeposit->depositorReference,
-                ]
-            );
-
-            if (! $dto->isSuccessful()) {
-                throw InvalidResponseException::fromResponseCode($dto->responseCode);
-            }
-
-            return $dto;
-        } catch (SoapFault $e) {
-            throw ConnectionException::fromSoapFault($e, 'Failed to reverse customer payment');
+        if (! $dto->isSuccessful()) {
+            throw InvalidResponseException::fromResponseCode($dto->responseCode);
         }
+
+        return $dto;
     }
 
     /**
@@ -205,11 +203,9 @@ final class CGrateService
      */
     public static function getCustomerIssuerName(string $customerAccount): string
     {
-        preg_match(
-            '/^(?:260|0)?(\d{2})\d*$/',
-            trim($customerAccount),
-            $prefix
-        );
+        if (! preg_match('/^(?:260|0)?(\d{2})\d*$/', trim($customerAccount), $prefix)) {
+            return 'Unknown Issuer';
+        }
 
         return match ($prefix[1]) {
             '97', '77', '57' => 'Airtel',
@@ -267,6 +263,31 @@ final class CGrateService
     }
 
     /**
+     * Execute a SOAP method, validate the response, and return the result as an array.
+     *
+     * @param  string  $soapMethod    The SOAP method name to call on the client
+     * @param  string  $errorContext  Human-readable context string used in error messages
+     * @param  array|null  $params    Parameters to pass to the SOAP method, or null for no parameters
+     * @return  array  The response->return property cast to an array
+     * @throws  \CGrate\Php\Exceptions\ConnectionException  If a SoapFault occurs
+     * @throws  \CGrate\Php\Exceptions\InvalidResponseException  If the response structure is invalid
+     */
+    private function callSoap(string $soapMethod, string $errorContext, ?array $params = null): array
+    {
+        try {
+            $response = $params !== null
+                ? $this->client->{$soapMethod}($params)
+                : $this->client->{$soapMethod}();
+
+            $this->validateResponse($response, $errorContext);
+
+            return (array) $response->return;
+        } catch (SoapFault $e) {
+            throw ConnectionException::fromSoapFault($e, $errorContext);
+        }
+    }
+
+    /**
      * Validate the soap client response and check if the return property exists
      *
      * @param  object  $response  soap client response object
@@ -276,6 +297,10 @@ final class CGrateService
     private function validateResponse(object $response, string $method): void
     {
         if (! is_object($response) || ! property_exists($response, 'return')) {
+            throw InvalidResponseException::unexpectedFormat($method);
+        }
+
+        if ($response->return === null) {
             throw InvalidResponseException::unexpectedFormat($method);
         }
     }

@@ -12,7 +12,7 @@ final readonly class CashDepositRequestDTO
     /**
      * Create a new cash deposit request DTO.
      *
-     * @param  float  $transactionAmount  The amount of the transaction (must be positive)
+     * @param  float  $transactionAmount  The amount of the transaction (must be positive, max 2 decimal places)
      * @param  string  $customerAccount  The contact number of the customer (should be in format 260XXXXXXXXX)
      * @param  string  $issuerName  The customer account issuer name
      * @param  string  $depositorReference  The unique reference for the cash deposit (should be unique per transaction)
@@ -28,7 +28,7 @@ final readonly class CashDepositRequestDTO
     /**
      * Create a new cash deposit request DTO.
      *
-     * @param  float  $transactionAmount  The amount of the transaction (must be positive)
+     * @param  float  $transactionAmount  The amount of the transaction (must be positive, max 2 decimal places)
      * @param  string  $customerAccount  The contact number of the customer (should be in format 260XXXXXXXXX)
      * @param  string  $issuerName  The customer account issuer name
      * @param  string  $depositorReference  The unique reference for the cash deposit (should be unique per transaction)
